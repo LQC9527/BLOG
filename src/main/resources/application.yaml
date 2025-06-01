@@ -1,0 +1,16 @@
+spring:
+
+  application:
+    name: JianFei
+
+  data:
+    redis:
+      host: 120.24.226.69
+      port: 1923
+      password: antan1011
+      timeout: 3000ms
+      database: 1
+
+jwt:
+  secretKey: jianfei1234567890123456789012345678901234567890
+  expiration: 360000
