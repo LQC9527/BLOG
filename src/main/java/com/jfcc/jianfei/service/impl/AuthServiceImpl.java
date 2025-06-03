@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Map;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -24,7 +27,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(User user) {
         String password = redisTemplate.opsForValue().get(user.getUserNo());
-        System.out.println(password);
         if (!StringUtils.isBlank(password)) {
             if (utils.JBcryptMatched( user.getPassword(),password)) {
                 return jwtUtils.generateToken(user.getUserNo());
@@ -38,13 +40,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String signUp(User user) {
-        String password = redisTemplate.opsForValue().get(user.getUserNo());
-        if (StringUtils.isBlank(password)) {
-            redisTemplate.opsForValue().set(user.getUserNo(),utils.JBcryptEndode(user.getPassword()));
-            return jwtUtils.generateToken(user.getUserNo());
+        Map<Object, Object> map = redisTemplate.opsForHash().entries(user.getUserNo());
+        if (!map.containsKey(user.getUserNo())) {
+            this.putUser(user);
+            return "注册成功";
         } else {
             return "此用户号已存在";
         }
     }
+
+    public void putUser(User user) {
+        redisTemplate.opsForHash().put(user.getUserNo(),"password",user.getPassword());
+        redisTemplate.opsForHash().put(user.getUserNo(),"role",user.getRole());
+    }
+
 
 }
