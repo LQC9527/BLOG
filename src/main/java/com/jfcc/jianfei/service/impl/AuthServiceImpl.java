@@ -1,5 +1,6 @@
 package com.jfcc.jianfei.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.jfcc.jianfei.entity.User;
 import com.jfcc.jianfei.service.AuthService;
 import com.jfcc.jianfei.utils.EDcryptUtils;
@@ -40,13 +41,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String signUp(User user) {
-        Map<Object, Object> map = redisTemplate.opsForHash().entries(user.getUserNo());
-        if (!map.containsKey(user.getUserNo())) {
-            this.putUser(user);
-            return "注册成功";
-        } else {
+        String json = redisTemplate.opsForValue().get(user.getUserNo());
+        if (StringUtils.isNotBlank(json)) {
             return "此用户号已存在";
         }
+        redisTemplate.opsForValue().set(user.getUserNo(), JSON.toJSONString(user));
+        return "注册成功";
     }
 
     public void putUser(User user) {
