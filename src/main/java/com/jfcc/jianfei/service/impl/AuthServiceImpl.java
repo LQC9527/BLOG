@@ -28,9 +28,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<String> login(User user) {
-        String password = redisTemplate.opsForValue().get(user.getUserNo());
-        if (!StringUtils.isBlank(password)) {
-            if (utils.JBcryptMatched( user.getPassword(),password)) {
+        String json = redisTemplate.opsForValue().get(user.getUserNo());
+        if (!StringUtils.isBlank(json)) {
+            User userdata = JSON.parseObject(json, User.class);
+            if (utils.JBcryptMatched( user.getPassword(),userdata.getPassword())) {
                 String token = jwtUtils.generateToken(user.getUserNo());
                 return ResponseEntity.success(token);
             }
@@ -45,6 +46,8 @@ public class AuthServiceImpl implements AuthService {
         if (StringUtils.isNotBlank(json)) {
             return ResponseEntity.failure(512,"此用户已存在");
         }
+        String encodePsd = utils.JBcryptEndode(user.getPassword());
+        user.setPassword(encodePsd);
         redisTemplate.opsForValue().set(user.getUserNo(), JSON.toJSONString(user));
         return ResponseEntity.success("注册成功");
     }
