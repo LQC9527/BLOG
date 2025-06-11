@@ -5,6 +5,7 @@ import com.jfcc.jianfei.entity.User;
 import com.jfcc.jianfei.service.AuthService;
 import com.jfcc.jianfei.utils.EDcryptUtils;
 import com.jfcc.jianfei.utils.JwtUtils;
+import com.jfcc.jianfei.utils.ResponseEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,27 +27,26 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtils jwtUtils;
 
     @Override
-    public String login(User user) {
+    public ResponseEntity<String> login(User user) {
         String password = redisTemplate.opsForValue().get(user.getUserNo());
         if (!StringUtils.isBlank(password)) {
             if (utils.JBcryptMatched( user.getPassword(),password)) {
-                return jwtUtils.generateToken(user.getUserNo());
-            } else {
-                return "密码错误";
+                String token = jwtUtils.generateToken(user.getUserNo());
+                return ResponseEntity.success(token);
             }
-        } else {
-            return "账号不存在";
+            return ResponseEntity.failure(511,"密码错误");
         }
+        return ResponseEntity.failure(510,"账户不存在");
     }
 
     @Override
-    public String signUp(User user) {
+    public ResponseEntity<String> signUp(User user) {
         String json = redisTemplate.opsForValue().get(user.getUserNo());
         if (StringUtils.isNotBlank(json)) {
-            return "此用户号已存在";
+            return ResponseEntity.failure(512,"此用户已存在");
         }
         redisTemplate.opsForValue().set(user.getUserNo(), JSON.toJSONString(user));
-        return "注册成功";
+        return ResponseEntity.success("注册成功");
     }
 
     public void putUser(User user) {

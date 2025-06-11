@@ -1,9 +1,10 @@
 package com.jfcc.jianfei.service;
 
 import com.jfcc.jianfei.entity.User;
+import com.jfcc.jianfei.utils.ResponseEntity;
 
 public interface AuthService {
-    String login(User user);
+    ResponseEntity<String> login(User user);
 
-    String signUp(User user);
+    ResponseEntity<String> signUp(User user);
 }
