@@ -15,12 +15,12 @@ public class AuthContoller {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
+    public ResponseEntity<User> login(@RequestBody User user) {
         return authService.login(user);
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody User user) {
+    public ResponseEntity<User> signUp(@RequestBody User user) {
         return authService.signUp(user);
     }
 

@@ -10,4 +10,10 @@ public class User {
     private String password;
 
     private String role;
+
+    private String token;
+
+    private String txTime;
+
+    private String upTime;
 }

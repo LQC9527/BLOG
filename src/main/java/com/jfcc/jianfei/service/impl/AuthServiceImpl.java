@@ -27,13 +27,14 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtils jwtUtils;
 
     @Override
-    public ResponseEntity<String> login(User user) {
+    public ResponseEntity<User> login(User user) {
         String json = redisTemplate.opsForValue().get(user.getUserNo());
         if (!StringUtils.isBlank(json)) {
             User userdata = JSON.parseObject(json, User.class);
             if (utils.JBcryptMatched( user.getPassword(),userdata.getPassword())) {
                 String token = jwtUtils.generateToken(user.getUserNo());
-                return ResponseEntity.success(token);
+                user.setToken(token);
+                return ResponseEntity.success(user);
             }
             return ResponseEntity.failure(511,"密码错误");
         }
@@ -41,20 +42,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<String> signUp(User user) {
+    public ResponseEntity<User> signUp(User user) {
         String json = redisTemplate.opsForValue().get(user.getUserNo());
         if (StringUtils.isNotBlank(json)) {
             return ResponseEntity.failure(512,"此用户已存在");
         }
         String encodePsd = utils.JBcryptEndode(user.getPassword());
         user.setPassword(encodePsd);
-        redisTemplate.opsForValue().set(user.getUserNo(), JSON.toJSONString(user));
-        return ResponseEntity.success("注册成功");
+        user.setRole("100");
+
+        return ResponseEntity.success(user);
     }
 
-    public void putUser(User user) {
-        redisTemplate.opsForHash().put(user.getUserNo(),"password",user.getPassword());
-        redisTemplate.opsForHash().put(user.getUserNo(),"role",user.getRole());
+    public void redisSave(User user) {
+
     }
 
 
