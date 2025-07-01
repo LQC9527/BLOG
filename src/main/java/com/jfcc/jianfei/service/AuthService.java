@@ -8,5 +8,4 @@ public interface AuthService {
 
     ResponseEntity<User> signUp(User user);
 
-    ResponseEntity<User> release(User user);
 }

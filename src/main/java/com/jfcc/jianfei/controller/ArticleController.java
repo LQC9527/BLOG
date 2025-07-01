@@ -13,24 +13,30 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/context")
-public class ContextController {
+@RequestMapping("/article")
+public class ArticleController {
 
     @Autowired
     private ArticleService articleService;
 
     @PostMapping("/save")
-    public ResponseEntity<List<Article>> save (@RequestBody Article article){
+    public ResponseEntity<Article> save (@RequestBody Article article){
         return articleService.save(article);
     }
 
     @PostMapping("/create")
     public ResponseEntity<Article> create (@RequestBody User user){
+        System.out.println("到了");
         return articleService.create(user);
     }
 
     @PostMapping("/release")
     public ResponseEntity<Article> release (@RequestBody Article article){
         return articleService.release(article);
+    }
+
+    @PostMapping("/get")
+    public ResponseEntity<List<Article>> get (@RequestBody User user){
+        return articleService.get(user);
     }
 }

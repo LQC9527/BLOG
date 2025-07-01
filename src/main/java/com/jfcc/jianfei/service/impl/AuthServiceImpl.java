@@ -54,9 +54,6 @@ public class AuthServiceImpl implements AuthService {
         return ResponseEntity.success(user);
     }
 
-    public void redisSave(User user) {
-
-    }
 
 
 }

@@ -30,12 +30,14 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ResponseEntity<Article> create(User user) {
         Article article = new Article();
-        article.setArticleId(new SnowflakeGenerator().next().toString());
+        String articleId = new SnowflakeGenerator().next().toString();
+        article.setArticleId(articleId);
         article.setStatus(ArticleStatus.INIT.getStatus());
         article.setUserNo(user.getUserNo());
         article.setTitle("新建文章标题");
         article.setContent("新建文章内容");
         article.setTxTime(DateUtil.now());
+        cache.put(articleId,article);
         return ResponseEntity.success(article);
     }
 
@@ -62,10 +64,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ResponseEntity<Article> release(Article article) {
-        RMap<String,String> rMap = redissonClient.getMap(DataName.CONTEXT.getName()+":"+article.getArticleId());
-        rMap.
-        map.remove("picPath");
-        rMap.putAll(BeanUtil.beanToMap());
+        RMap<String,Object> rMap = redissonClient.getMap(DataName.CONTEXT.getName()+":"+article.getArticleId());
+        RList<String> rList = redissonClient.getList(article.getArticleId());
+        rList.addAll(rList);
+        rMap.remove("picPath");
+        rMap.putAll(BeanUtil.beanToMap(article));
         return null;
     }
 

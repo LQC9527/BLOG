@@ -22,17 +22,17 @@ public class JwtFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String path = req.getRequestURI();
-
+        filterChain.doFilter(request, response);
         // 白名单示例
 //        if (path.startsWith("/login") || path.startsWith("/register")) {
 //            filterChain.doFilter(request, response);
 //            return;
 //        }
-        if (path.startsWith("/login") || path.startsWith("/signUp")) {
-//            System.out.println("login登录");
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (path.startsWith("/login") || path.startsWith("/signUp")) {
+////            System.out.println("login登录");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
     }
 
     @Override
